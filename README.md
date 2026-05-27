@@ -42,9 +42,10 @@ graph TD
     N8N --> VDB
     N8N --> DB
     LLM --> SEARCH
+```
+
 ⚙️ Stack Technique & Conteneurs
 L'infrastructure est modulaire et orchestrée via docker-compose.
-```
 
 1. 🧠 Couche Intelligence & Routage
 LiteLLM : Proxy et load-balancer. Uniformise les appels vers des API tierces (Groq, OpenAI, Google) et les modèles locaux (Ollama) tout en gérant les quotas (RPM/TPM).
