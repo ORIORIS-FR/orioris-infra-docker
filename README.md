@@ -44,6 +44,7 @@ graph TD
     LLM --> SEARCH
 ⚙️ Stack Technique & Conteneurs
 L'infrastructure est modulaire et orchestrée via docker-compose.
+```
 
 1. 🧠 Couche Intelligence & Routage
 LiteLLM : Proxy et load-balancer. Uniformise les appels vers des API tierces (Groq, OpenAI, Google) et les modèles locaux (Ollama) tout en gérant les quotas (RPM/TPM).
@@ -74,16 +75,19 @@ Filtrage Git : Un .gitignore strict empêche la fuite de données locales (volum
 🚀 Déploiement
 Cloner le dépôt :
 
-Bash
+```Bash
    git clone [https://github.com/ORIORIS-FR/orioris-infra-docker.git](https://github.com/ORIORIS-FR/orioris-infra-docker.git)
    cd orioris-infra-docker
+```
 Configurer l'environnement :
 
-Bash
+```Bash
    cp .env.example .env
    # Éditer le fichier .env avec vos variables sécurisées
    nano .env
+```
 Lancer l'infrastructure :
 
-Bash
+```Bash
    docker-compose up -d
+```
