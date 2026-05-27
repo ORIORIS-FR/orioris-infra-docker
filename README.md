@@ -14,7 +14,7 @@ Le système est conçu sur un modèle d'isolation stricte. L'accès externe est 
 ```mermaid
 graph TD
     subgraph "🌐 Extérieur (Internet)"
-        User[Utilisateur / Mobile]
+        User[Utilisateur / Mobile Pixel 10a]
     end
 
     subgraph "🛡️ Périmètre de Sécurité"
@@ -26,7 +26,6 @@ graph TD
         N8N[n8n - Orchestrateur]
         LLM[LiteLLM - Routeur IA]
         VDB[Qdrant - Vector DB]
-        DB[(PostgreSQL)]
         CHAT[Open WebUI]
         SEARCH[SearXNG - OSINT]
     end
@@ -40,55 +39,52 @@ graph TD
     CHAT --> LLM
     N8N --> LLM
     N8N --> VDB
-    N8N --> DB
     LLM --> SEARCH
 ```
 
-⚙️ Stack Technique & Conteneurs
-L'infrastructure est modulaire et orchestrée via docker-compose.
+## ⚙️ Stack Technique & Conteneurs Actifs
 
-1. 🧠 Couche Intelligence & Routage
-LiteLLM : Proxy et load-balancer. Uniformise les appels vers des API tierces (Groq, OpenAI, Google) et les modèles locaux (Ollama) tout en gérant les quotas (RPM/TPM).
+L'infrastructure est modulaire et orchestrée via `docker-compose`.
 
-Open WebUI : Interface de chat souveraine connectée à LiteLLM, isolée du web public.
+### 1. 🧠 Couche Intelligence & Routage
+* **LiteLLM** : Proxy et load-balancer. Uniformise les appels vers des API tierces (Groq, OpenAI, Google) et les modèles locaux (Ollama) tout en gérant les quotas (RPM/TPM).
+* **Open WebUI** : Interface de chat souveraine connectée à LiteLLM, isolée du web public.
+* **SearXNG** : Moteur de méta-recherche privé pour l'OSINT et l'exploration web des agents IA sans tracking.
 
-2. ⚡ Couche Automatisation & Données
-n8n : Orchestrateur de flux de travail. Déployé avec des variables d'environnement restrictives pour protéger le système de fichiers (N8N_FS_ALLOWED_PATHS).
+### 2. ⚡ Couche Automatisation & Données
+* **n8n** : Orchestrateur de flux de travail. Déployé avec des variables d'environnement restrictives pour protéger le système de fichiers (`N8N_FS_ALLOWED_PATHS`).
+* **Qdrant** : Base de données vectorielle ultra-rapide pour l'ingestion de documents et l'architecture RAG (Retrieval-Augmented Generation).
 
-PostgreSQL & Redis : Bases de données robustes pour la persistance de n8n et la mise en cache des requêtes LLM (optimisation de la latence).
+### 3. 🔐 Couche Sécurité & Accès
+* **Tailscale** : Déployé en `network_mode: host` avec privilèges `net_admin` restreints pour intégrer le serveur dans un VPN Mesh privé (WireGuard).
+* **Cloudflared** : Tunnel sortant sécurisé, évitant l'ouverture de ports (NAT) sur le pare-feu matériel de l'infrastructure hôte.
 
-Qdrant : Base de données vectorielle ultra-rapide pour l'ingestion de documents et l'architecture RAG (Retrieval-Augmented Generation).
+---
 
-3. 🔐 Couche Sécurité & Accès
-Tailscale : Déployé en network_mode: host avec privilèges net_admin restreints pour intégrer le serveur dans un VPN Mesh privé (WireGuard).
+## 🔒 Posture de Sécurité (SecOps)
 
-Cloudflared : Tunnel sortant sécurisé, évitant l'ouverture de ports (NAT) sur le pare-feu matériel de l'infrastructure hôte.
-
-🔒 Posture de Sécurité (SecOps)
 Ce dépôt est une démonstration d'infrastructure. Les mesures de sécurité suivantes sont appliquées en production :
+* **Air-Gap Logique** : Tous les conteneurs sensibles sont isolés dans le réseau `bunker_net` (driver: bridge). Seuls les tunnels ont un accès entrant/sortant.
+* **Gestion des Secrets** : Aucun identifiant n'est hardcodé. Le déploiement s'appuie sur un fichier `.env` non versionné (voir `.env.example`).
+* **Filtrage Git** : Un `.gitignore` strict empêche la fuite de données locales (volumes de base de données, clés privées, configurations spécifiques).
 
-Air-Gap Logique : Tous les conteneurs sensibles sont isolés dans le réseau bunker_net (driver: bridge). Seuls les tunnels ont un accès entrant/sortant.
+---
 
-Gestion des Secrets : Aucun identifiant n'est hardcodé. Le déploiement s'appuie sur un fichier .env non versionné (voir .env.example).
+## 🚀 Déploiement
 
-Filtrage Git : Un .gitignore strict empêche la fuite de données locales (volumes de base de données, clés privées, configurations spécifiques).
-
-🚀 Déploiement
 Cloner le dépôt :
-
-```Bash
-   git clone [https://github.com/ORIORIS-FR/orioris-infra-docker.git](https://github.com/ORIORIS-FR/orioris-infra-docker.git)
-   cd orioris-infra-docker
+```bash
+git clone [https://github.com/ORIORIS-FR/orioris-infra-docker.git](https://github.com/ORIORIS-FR/orioris-infra-docker.git)
+cd orioris-infra-docker
 ```
+
 Configurer l'environnement :
-
-```Bash
-   cp .env.example .env
-   # Éditer le fichier .env avec vos variables sécurisées
-   nano .env
+```bash
+cp .env.example .env
+nano .env # Éditer le fichier .env avec vos variables sécurisées
 ```
-Lancer l'infrastructure :
 
-```Bash
-   docker-compose up -d
+Lancer l'infrastructure :
+```bash
+docker-compose up -d
 ```
