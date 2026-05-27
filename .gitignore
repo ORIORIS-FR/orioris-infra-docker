@@ -1,0 +1,26 @@
+# ==========================================
+# 🛑 SÉCURITÉ : NE JAMAIS UPLOADER LE .env
+# ==========================================
+.env
+.env.*
+!.env.example
+
+# ==========================================
+# 🛑 VOLUMES DOCKER : DONNÉES LOCALES
+# ==========================================
+/RAG_TEST/
+/litellm_config/
+/qdrant_storage/
+/tessdata/
+/searxng_config/
+/homepage_config/
+/tailscale_data/
+/syncthing_data/
+/postgres_data/
+/open_webui_data/
+
+# ==========================================
+# SYSTÈME
+# ==========================================
+.DS_Store
+Thumbs.db
